@@ -1,0 +1,35 @@
+<!-- Slide row -->
+<div class="covers">
+	<ul class="clearfix" st-slide-row slide-clickable="true" scrollable="true" scroll-friction="200" st-navigatable nav-on="{down: showDetailView, enter: showDetailView}" nav-title="main" ng-if="items.length" st-nav-if="items.length">
+		<li ng-repeat="item in items track by item.id">
+			<a ng-click="showDetailView($index)">
+				<img st-lazy-img="item.cover_url" />
+				<span class="cover-box">
+					<span class="title" once-text="item.name"></span>
+					<span class="more" once-text="item.more"></span>
+				</span>
+				<span class="more-icon"><i class="icon icon-down-open-big"></i></span>
+			</a>
+		</li>
+		<li class="no-item loading-box spinner" ng-show="loadingPage">
+			<div class="bounce1"></div>
+			<div class="bounce2"></div>
+			<div class="bounce3"></div>
+		</li>
+	</ul>
+</div>
+
+<!-- Detail view for transition -->
+<div class="detail-view" ng-if="detail.active || detail.transition">
+	<!-- Cover image -->
+	<div class="detail-img">
+		<a ng-click="hideDetailView()">
+			<span class="more-icon"></span>
+			<img ng-src="{{ detail.item.cover_url }}" />
+			<span class="cover-box">
+				<span class="title" once-text="detail.item.name"></span>
+				<span class="more" once-text="detail.item.more"></span>
+			</span>
+		</a>
+	</div>
+</div>

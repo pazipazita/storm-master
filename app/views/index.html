@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html ng-app="storm">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+	<!-- inject:css -->
+	<link rel="stylesheet" href="/app/assets/css/less.css">
+	<link rel="stylesheet" href="/app/assets/css/loading-bar.css">
+	<!-- endinject -->
+
+	<base href="/app/views/index.html">
+</head>
+<body ng-controller="MainCtrl" st-zoom-resize="700" st-os-check st-ui-animations>
+
+	<div class="cover-bg" st-back-img="{{ coverUrl }}" ng-if="blurBackground && !playerActive"></div>
+	<div class="cover-shadow"></div>
+
+	<div ng-show="!playerActive">
+		<!-- Menu row -->
+		<div class="menu-row" st-main-menu></div>
+
+		<div class="main-view">
+			<!-- Main view -->
+			<div ui-view="main"></div>
+
+			<!-- Detail view -->
+			<div ui-view="detail" ng-hide="playerLoading" ng-if="!playerActive"></div>
+		</div>
+	</div>
+
+	<!-- Player loader -->
+	<div class="player-loader full-popup" ng-if="playerLoading" ng-cloak>
+		<div class="wrap">
+			<p translate>PLEASE_WAIT_PLAY</p>
+			<div class="loading-bar">
+				<span ng-style="{width: playerProgress.percent + '%'}"></span>
+			</div>
+			<div class="loading-info">
+				<span ng-if="playerProgress.peers">{{ 'DOWNLOADING_FROM' | translate }} {{ playerProgress.active }} {{ 'OF' | translate }} {{ playerProgress.peers }} {{ 'SEEDS' | translate }}. {{ 'DOWNLOAD_SPEED' | translate }}: {{ playerProgress.speed }}/s</span>
+				<span ng-if="!playerProgress.peers" translate>LOOKING_FOR_SEEDS</span>
+			</div>
+			<ul class="action-buttons">
+				<li><a class="button big" ng-click="cancelPreloading()" st-navigatable nav-on="{enter: cancelPreloading, up: 'preventDefault', down: 'preventDefault'}" nav-title="cancel-loading" st-nav-if="playerLoading"><span translate>CANCEL</span></a></li>
+			</ul>
+		</div>
+	</div>
+
+	<!-- Player -->
+	<div class="player" ng-controller="PlayerCtrl" ng-include src="'/app/views/player.html'" ng-if="playerActive" ng-cloak></div>
+
+	<!-- Error alert -->
+	<div class="error full-popup dark-bg" ng-if="error.status" ng-cloak>
+		<div class="wrap">
+			<h3>{{ error.title | translate }}</h3>
+			<p>{{ error.message | translate }}</p>
+			<ul class="action-buttons">
+				<li><a class="button big" ng-click="closeError()" st-navigatable nav-on="{up: 'preventDefault', down: 'preventDefault', enter: closeError}" nav-title="error-close"><span translate>OK</span></a></li>
+			</ul>
+		</div>
+	</div>
+
+	<!-- Offline alert -->
+	<div class="offline full-popup dark-bg" ng-if="offline" ng-cloak>
+		<div class="wrap">
+			<h3 translate>NO_CONNECTION</h3>
+			<p translate>NO_CONNECTION_MSG</p>
+			<ul class="action-buttons">
+				<li><a class="button big" ng-click="closeOffline()" st-navigatable nav-on="{up: 'preventDefault', down: 'preventDefault', enter: closeOffline}" nav-title="offline-close"><span translate>OK</span></a></li>
+			</ul>
+		</div>
+	</div>
+
+	<!-- Welcome alert -->
+	<div class="welcome full-popup dark-bg" ng-if="welcome" ng-cloak>
+		<div class="wrap">
+			<h3 translate>NEWS</h3>
+			<ul class="news">
+				<li translate>REMOTE_CONTROL</li>
+				<li translate>PLAYING_QUEUE</li>
+				<li translate>HISTORY</li>
+				<li translate>PLAY_TORRENT_URL</li>
+				<li translate>ADD_SUBTITLE_FROM_FILE</li>
+				<li translate>BUGFIXES</li>
+			</ul>
+			<p translate>NEWS_MSG</p>
+			<p translate>UI_MSG</p>
+			<ul class="action-buttons">
+				<li><a class="button big" ng-click="closeWelcome()" st-navigatable nav-on="{up: 'preventDefault', down: 'preventDefault', enter: closeWelcome}" nav-title="welcome-close"><span translate>OK</span></a></li>
+			</ul>
+		</div>
+	</div>
+
+	<!-- TO DO: Video loop to prevent PC from sleeping when using the remote -->
+	<!-- <video ng-if="remoteActive" loop src=""></video> -->
+
+	<!-- inject:bower -->
+	<script src="/bower_components/jquery/dist/jquery.js"></script>
+	<script src="/bower_components/angular/angular.js"></script>
+	<script src="/bower_components/angular-animate/angular-animate.js"></script>
+	<script src="/bower_components/angular-translate/angular-translate.js"></script>
+	<script src="/bower_components/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>
+	<script src="/bower_components/lodash/dist/lodash.compat.js"></script>
+	<script src="/bower_components/angular-loading-bar/build/loading-bar.js"></script>
+	<script src="/bower_components/angular-cookie/angular-cookie.js"></script>
+	<script src="/bower_components/angular-media-player/dist/angular-media-player.min.js"></script>
+	<script src="/bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
+	<script src="/bower_components/pouchdb/dist/pouchdb-nightly.js"></script>
+	<script src="/bower_components/offline/offline.min.js"></script>
+	<script src="/bower_components/angulartics/src/angulartics.js"></script>
+	<script src="/bower_components/angulartics/src/angulartics-ga.js"></script>
+	<script src="/bower_components/angular-once/once.js"></script>
+	<script src="/bower_components/restangular/dist/restangular.js"></script>
+	<script src="/bower_components/angular-pouchdb/angular-pouchdb.js"></script>
+	<!-- endinject -->
+	
+	<!-- inject:js -->
+	<script src="/app/js/app.js"></script>
+	<script src="/app/js/config/localStorage.js"></script>
+	<script src="/app/js/config/mediaPlayer.js"></script>
+	<script src="/app/js/config/restangular.js"></script>
+	<script src="/app/js/config/routes.js"></script>
+	<script src="/app/js/config/sce.js"></script>
+	<script src="/app/js/config/translate.js"></script>
+	<script src="/app/js/controllers/EpisodeCtrl.js"></script>
+	<script src="/app/js/controllers/LocalRowListCtrl.js"></script>
+	<script src="/app/js/controllers/MainCtrl.js"></script>
+	<script src="/app/js/controllers/MovieCtrl.js"></script>
+	<script src="/app/js/controllers/PlayerCtrl.js"></script>
+	<script src="/app/js/controllers/RemoteCtrl.js"></script>
+	<script src="/app/js/controllers/RowListCtrl.js"></script>
+	<script src="/app/js/controllers/SearchCtrl.js"></script>
+	<script src="/app/js/controllers/SettingsCtrl.js"></script>
+	<script src="/app/js/controllers/TvShowCtrl.js"></script>
+	<script src="/app/js/controllers/UrlCtrl.js"></script>
+	<script src="/app/js/directives/stBackImg.js"></script>
+	<script src="/app/js/directives/stCoverRow.js"></script>
+	<script src="/app/js/directives/stFullHeight.js"></script>
+	<script src="/app/js/directives/stInputFocus.js"></script>
+	<script src="/app/js/directives/stKeyScroll.js"></script>
+	<script src="/app/js/directives/stLazyImg.js"></script>
+	<script src="/app/js/directives/stListKeyScroll.js"></script>
+	<script src="/app/js/directives/stMainMenu.js"></script>
+	<script src="/app/js/directives/stMenuRow.js"></script>
+	<script src="/app/js/directives/stNavIf.js"></script>
+	<script src="/app/js/directives/stNavigatable.js"></script>
+	<script src="/app/js/directives/stOsCheck.js"></script>
+	<script src="/app/js/directives/stPlayerControls.js"></script>
+	<script src="/app/js/directives/stSearchInput.js"></script>
+	<script src="/app/js/directives/stSeasonList.js"></script>
+	<script src="/app/js/directives/stSettingsOption.js"></script>
+	<script src="/app/js/directives/stSlideRow.js"></script>
+	<script src="/app/js/directives/stSourceSelect.js"></script>
+	<script src="/app/js/directives/stTitleBar.js"></script>
+	<script src="/app/js/directives/stTracksMenu.js"></script>
+	<script src="/app/js/directives/stUiAnimations.js"></script>
+	<script src="/app/js/directives/stVideoTracks.js"></script>
+	<script src="/app/js/directives/stVolumeSlider.js"></script>
+	<script src="/app/js/directives/stZoomWindow.js"></script>
+	<script src="/app/js/filters/nl2br.js"></script>
+	<script src="/app/js/filters/qualityLabel.js"></script>
+	<script src="/app/js/filters/timeToString.js"></script>
+	<script src="/app/js/lib/qrcode.min.js"></script>
+	<script src="/app/js/lib/ui-router.js"></script>
+	<script src="/app/js/node/playtorrent.js"></script>
+	<script src="/app/js/node/winstate.js"></script>
+	<script src="/app/js/services/CoverRow.js"></script>
+	<script src="/app/js/services/Error.js"></script>
+	<script src="/app/js/services/History.js"></script>
+	<script src="/app/js/services/Movie.js"></script>
+	<script src="/app/js/services/Navigation.js"></script>
+	<script src="/app/js/services/Player.js"></script>
+	<script src="/app/js/services/Queue.js"></script>
+	<script src="/app/js/services/Remote.js"></script>
+	<script src="/app/js/services/Search.js"></script>
+	<script src="/app/js/services/Settings.js"></script>
+	<script src="/app/js/services/TvShow.js"></script>
+	<script src="/app/js/services/Util.js"></script>
+	<!-- endinject -->
+	
+	<!-- Anonymous view tracking to help improve app -->
+	<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','http://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-2752072-3', 'none');
+	</script>
+	
+	</body>
+</html>

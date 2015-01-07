@@ -1,0 +1,15 @@
+!.gitkeep
+node_modules/
+bower_components/
+.DS_Store
+
+# Sublime Text Files
+*.sublime-*
+
+# Debugging Purposes
+*.mkv
+*.mp4
+*.srt
+
+# Build files
+/build

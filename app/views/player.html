@@ -1,0 +1,94 @@
+<st-player-controls ng-model="playerLayer"></st-player-controls>
+
+<!-- Player title -->
+<div class="player-title player-layout clearfix" ng-if="playerLayer">
+	<st-title-bar></st-title-bar>
+	<div class="wrap">
+		<a class="button close" st-navigatable ng-click="showClosePlayer()" nav-on="{escape: 'preventDefault', enter: showClosePlayer, up: 'preventDefault'}" nav-title="close-button" st-nav-if="playerLayer"><span translate>EXIT_VIDEO</span></a>
+		<div once-if="item">
+			<img once-src="item.type=='episode' ? item.tvshow.covers.medium : item.covers.medium" />
+			<div class="info">
+				<span class="title" once-text="item.name"></span>
+				<span class="more" once-text="item.type=='episode' ? item.tvshow.name : item.year"></span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="player-subtitles" ng-class="{'layer-visible': playerLayer}">
+	<div class="text"></div>
+</div>
+
+<video class="player-video" media-player="video" preload autoplay ng-src="{{ videoUrl }}" ng-click="video.playPause()" st-video-tracks></video>
+
+<!-- Controls -->
+<div class="player-controls player-layout" ng-if="playerLayer">
+	<!-- Progress bar -->
+	<div class="progress-bar">
+		<span class="label" ng-if="showTimeLabel" ng-style="{left: timeLabelLeft + '%'}">{{ timeLabel | timeToString }}</span>
+		<div class="clickable" ng-click="seekPercentage($event)"></div>
+		<div class="played" ng-style="{ width: (video.currentTime*100/video.duration) + '%' }"></div>
+		<div class="loaded" ng-style="{ width: video.loadPercent + '%' }"></div>
+	</div>
+
+	<div class="left-buttons">
+		<!-- Backward -->
+		<a class="player-button" st-navigatable ng-click="playBackward()" nav-on="{enter: playBackward, up: selectCloseButton, right: nextButton, down: 'preventDefault'}" nav-title="play-backward" st-nav-if="playerLayer">
+			<span><i class="icon icon-fast-backward"></i></span>
+		</a>
+		<!-- Play/pause -->
+		<a class="player-button" st-navigatable ng-click="togglePause()" nav-on="{enter: togglePause, up: selectCloseButton, left: prevButton, right: nextButton, down: 'preventDefault'}" nav-title="play-pause" st-nav-if="playerLayer">
+			<span><i class="icon icon-play" ng-class="{'icon-pause': video.playing}"></i></span>
+		</a>
+		<!-- Forward -->
+		<a class="player-button" st-navigatable ng-click="playForward()" nav-on="{enter: playForward, up: selectCloseButton, left: prevButton, right: nextButton, down: 'preventDefault'}" nav-title="play-forward" st-nav-if="playerLayer">
+			<span><i class="icon icon-fast-forward"></i></span>
+		</a>
+	</div>
+
+	<div class="right-buttons">
+		<!-- Subtitles icon -->
+		<a class="player-button" st-navigatable ng-click="toggleTracksMenu()" nav-on="{enter: toggleTracksMenu, up: toggleTracksMenu, left: prevButton, down: 'preventDefault', right: nextButton}" nav-title="subtitles-icon" st-nav-if="playerLayer">
+			<span><i class="icon icon-comment"></i></span>
+		</a>
+		<!-- Volume icon -->
+		<a class="player-button" st-navigatable ng-click="toggleMute()" nav-on="{enter: toggleMute, up: volumeUp, left: prevButton, down: volumeDown, right: nextButton}" nav-title="volume-icon" st-nav-if="playerLayer">
+			<span><i class="icon" ng-class="{'icon-sound': !video.muted, 'icon-mute': video.muted}"></i></span>
+		</a>
+		<!-- Full screen -->
+		<a class="player-button" st-navigatable ng-click="fullScreen()" nav-on="{enter: fullScreen, up: selectCloseButton, left: prevButton, down: 'preventDefault'}" nav-title="full-screen" st-nav-if="playerLayer">
+			<span><i class="icon" ng-class="{'icon-resize-full': !fullScreenMode, 'icon-resize-small': fullScreenMode}"></i></span>
+		</a>
+	</div>
+
+	<div class="middle-info">
+		<!-- Time -->
+		<div class="time">
+			<span class="current">{{ video.formatTime }}</span>
+			<span class="duration">/ {{ video.formatDuration }}</span>
+		</div>
+		<!-- Download info -->
+		<div class="download-info">
+			<span ng-if="!progress.complete">{{ 'DOWNLOADING_FROM' | translate }} {{ progress.active }} {{ 'OF' | translate }} {{ progress.peers }} {{ 'SEEDS' | translate }}. {{ 'DOWNLOAD_SPEED' | translate }}: {{ progress.speed }}/s</span>
+			<span ng-if="progress.complete" translate>DOWNLOAD_COMPLETE</span>
+		</div>
+	</div>
+</div>
+
+<!-- Subtitles menu -->
+<st-tracks-menu default-lang="config.subtitles"></st-tracks-menu>
+
+<!-- Volume slider -->
+<st-volume-slider default-volume="config.volume"></st-volume-slider>
+
+<!-- Close player alert -->
+<div class="player-close-alert full-popup dark-bg" ng-if="playerCloseAlert">
+	<div class="wrap">
+		<h2 translate>EXIT_VIDEO</h2>
+		<p translate>CLOSE_VIDEO_ALERT</p>
+		<ul class="action-buttons">
+			<li><a class="button big" ng-click="closePlayer()" st-navigatable nav-on="{up: 'preventDefault', enter: closePlayer, escape: hideClosePlayer}" nav-title="player-close-alert" st-nav-if="playerCloseAlert"><span translate>CLOSE</span></a></li>
+			<li><a class="button big" ng-click="hideClosePlayer()" st-navigatable nav-on="{enter: hideClosePlayer, escape: hideClosePlayer, down: 'preventDefault'}" st-nav-if="playerCloseAlert"><span translate>CANCEL</span></a></li>
+		</ul>
+	</div>
+</div>

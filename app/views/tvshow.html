@@ -1,0 +1,84 @@
+<!-- Detail view -->
+<div class="detail-view full">
+	<!-- Cover image -->
+	<div class="detail-img">
+		<a ng-click="goBack()">
+			<span class="more-icon"><i class="icon icon-up-open-big"></i></span>
+			<img ng-src="{{ tvshow.covers.medium }}" />
+			<span class="cover-box">
+				<span class="title" once-text="tvshow.name"></span>
+				<span class="more" once-text="tvshow.more"></span>
+			</span>
+		</a>
+		
+		<ul class="action-buttons">
+			<li><a class="button" ng-click="showSeasons()" st-navigatable nav-on="{escape: goBack, up: goBack, enter: showSeasons, down: 'preventDefault', right: rightColumn}" nav-title="detail-view"><span translate>SEASONS</span></a></li>
+		</ul>
+	</div>
+
+	<!-- Info -->
+	<div class="detail-info">
+
+		<div ng-hide="hideInfo">
+			<!-- Title -->
+			<h2 once-text="tvshow.name"></h2>
+			<div class="year">
+				<span once-text="tvshow.year"></span> 
+				<span ng-if="rating" class="rating">
+					<span class="stars"><span once-style="{width: ratingPercent + '%'}"></span></span>
+				</span>
+			</div>
+
+			<div class="info-labels">
+				<div class="line clearfix">
+					<span class="label"><span translate>GENRE</span><span class="text" once-text="tvshow.genre.name"></span></span>
+					<span class="label"><span translate>LANGUAGE</span><span class="text" once-text="tvshow.language.name"></span></span>
+					<span class="label last"><span translate>DURATION</span><span class="text" once-text="tvshow.duration"></span> <span translate>MIN</span></span>
+				</div>
+				<div class="line clearfix">
+					<span class="label"><span translate>SEASONS</span><span class="text" once-text="tvshow.seasons.length"></span></span>
+					<span class="label last"><span translate>EPISODES</span><span class="text" once-text="totalEpisodes()"></span></span>
+				</div>
+				<div class="line clearfix">
+					<span class="label last text-overflow"><span translate>CAST</span><span class="text" once-text="tvshow.cast"></span></span>
+				</div>
+			</div>
+
+			<!-- Plot -->
+			<div class="plot scroll-container" st-navigatable nav-on="{up: 'preventDefault', down: 'preventDefault', left: 'detail-view'}" nav-title="detail-plot" st-key-scroll scroll-child="true" st-nav-if="!showSourcesList" st-full-height>
+				<div class="scroll-box">
+					<p once-text="tvshow.plot"></p>
+				</div>
+			</div>
+		</div>
+
+		<!-- TV Show: Seasons -->
+		<div class="key-list" ng-if="showSeasonsList" st-full-height>
+			<div st-season-list seasons-list="tvshow.seasons" class="seasons-list scroll-box" st-list-key-scroll>
+				<ul class="action-buttons" ng-hide="selectedSeason!==null">
+					<!-- Seasons list -->
+					<li ng-repeat="season in seasonsList">
+						<a class="button big" season-number="{{ season.number }}" ng-click="selectSeason($index)" st-navigatable nav-on="{escape: hideSeasons, left: hideSeasons, up: prevSeason, down: nextSeason, right: selectSeason, enter: selectSeason}" nav-title="season"><span><i class="icon right icon-right-open-big"></i><span translate>SEASON</span> <span once-text="season.number"></span></span></a>
+					</li>
+					<!-- Go back -->
+					<li>
+						<a class="button big" ng-click="hideSeasons()" st-navigatable nav-on="{left: hideSeasons, enter: hideSeasons, down: 'preventDefault'}" nav-title="hide-seasons"><span><i class="icon icon-left-open-big"></i><span translate>GO_BACK</span></span></a>
+					</li>
+				</ul>
+				<ul class="action-buttons" ng-show="selectedSeason!==null">
+					<!-- Go back to seasons list -->
+					<li>
+						<a class="button big" ng-click="hideEpisodes()" st-navigatable nav-on="{left: hideEpisodes, up: 'preventDefault', enter: hideEpisodes}" nav-title="go-back-seasons"><span><i class="icon icon-left-open-big"></i><span class="number"><span translate>SEASON</span> <span once-text="seasonsList[selectedSeason].number"></span></span></span></a>
+					</li>
+					<!-- Episodes list -->
+					<li ng-repeat="episode in seasonsList[selectedSeason].episodes">
+						<a class="button big" episode-number="{{ episode.number }}" ng-click="selectEpisode($index)" st-navigatable nav-on="{escape: hideEpisodes, left: hideEpisodes, up: prevEpisode, down: nextEpisode, enter: selectEpisode}" nav-title="episode"><span>
+							<span class="number" once-text="episode.number"></span>
+							<span once-text="episode.name"></span>
+						</span></a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
